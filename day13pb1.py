@@ -30,7 +30,6 @@ class Machine :
             return 3 * sx + sy
         return 0
 
-    
     def __str__(self) :
         return f"Button A : X+{self.ax}, Y+{self.ay}\nButton B : X+{self.bx}, Y+{self.by}\nPrize : X={self.px}, Y={self.py}\n"
     

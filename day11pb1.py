@@ -15,8 +15,7 @@ def iter(l : list) -> list :
 
 def main() :
     l = L
-    for i in range(75) :
-        print(f"{i}/75")
+    for i in range(25) :
         l = iter(l)
     print(len(l))
 
