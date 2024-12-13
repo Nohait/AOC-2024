@@ -8,8 +8,8 @@ class Machine :
         self.bx = bx
         self.by = by
 
-        self.px = px + 10000000000000
-        self.py = py + 10000000000000
+        self.px = px
+        self.py = py 
         
 
     def cost(self) -> int :
