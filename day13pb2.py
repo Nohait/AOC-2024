@@ -61,7 +61,3 @@ if __name__ == "__main__" :
     for m in l_machines :
         tot_cost += m.cost()
     print(tot_cost)
-    
-    
-
-
