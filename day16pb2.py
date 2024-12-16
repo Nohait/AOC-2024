@@ -69,7 +69,8 @@ def parcours(r : list, start : tuple, exit : tuple) -> int :
     td = [start]
     cost[j_s][i_s] = 0
     preds = [[[] for _ in range(m)] for _ in range(n)]
-    seen = [(i_s,j_s)]
+    dir = [["" for _ in range(m)] for _ in range(n)]
+
     def gon(i,j,d) :
         if d == "N" :
             rot = 0
@@ -79,16 +80,7 @@ def parcours(r : list, start : tuple, exit : tuple) -> int :
             return
         if r[j-1][i] == '.' and cost[j-1][i] > cost[j][i] + 1 + rot:
             td.append((i,j-1,'N'))
-            preds[j-1][i] = [(i,j,"N")]
             cost[j-1][i] = cost[j][i] + 1 + rot
-        elif r[j-1][i] == '.' and cost[j-1][i] < 1e10:
-            if (j-1,i) == (j_s,i_s) :
-                return
-            _,_,d = preds[j-1][i][0]
-            if d == 'N' and cost[j-1][i] == cost[j][i] + 1 :
-                preds[j-1][i] += (i,j,'N')
-            elif d in 'EW' and cost[j-1][i] == cost[j][i] + 1001 :
-                preds[j-1][i] =+ (i,j,'N')
     def gos(i,j,d) :
         if d == "S" :
             rot = 0
@@ -98,16 +90,7 @@ def parcours(r : list, start : tuple, exit : tuple) -> int :
             return
         if r[j+1][i] == '.' and cost[j+1][i] > cost[j][i] + 1 + rot:
                 td.append((i,j+1,'S'))
-                preds[j+1][i] = [(i,j,'S')]
                 cost[j+1][i] = cost[j][i] + 1 + rot
-        elif r[j-1][i] == '.' and cost[j+1][i] < 1e10 :
-            if (j+1,i) == (j_s,i_s) :
-                return
-            _,_,d = preds[j+1][i][0]
-            if d == 'S' and cost[j+1][i] == cost[j][i] + 1 :
-                preds[j+1][i] += (i,j,'N')
-            elif d in 'EW' and cost[j+1][i] == cost[j][i] + 1001 :
-                preds[j+1][i] =+ (i,j,'N')
     def goe(i,j,d) :
         if d == "E" :
             rot = 0
@@ -117,16 +100,8 @@ def parcours(r : list, start : tuple, exit : tuple) -> int :
             return
         if r[j][i+1] == '.' and cost[j][i+1] > cost[j][i] + 1 + rot :
             td.append((i+1,j,"E"))
-            preds[j][i+1] = [(i,j,'E')]
             cost[j][i+1] = cost[j][i] + 1 + rot
-        elif r[j][i+1] == '.' and cost[j][i+1] < 1e10:
-            if (j,i+1) == (j_s,i_s) :
-                return
-            _,_,d = preds[j][i+1][0]
-            if d == 'E' and cost[j][i+1] == cost[j][i] + 1 :
-                preds[j][i+1] += (i,j,'N')
-            elif d in 'NS' and cost[j][i+1] == cost[j][i] + 1001 :
-                preds[j][i+1] =+ (i,j,'N')
+        
     def gow(i,j,d) :
         if d == "W" :
             rot = 0
@@ -136,20 +111,9 @@ def parcours(r : list, start : tuple, exit : tuple) -> int :
             return
         if r[j][i-1] == '.' and cost[j][i-1] > cost[j][i] + 1 + rot :
             td.append((i-1,j,"W"))
-            preds[j][i-1] = [(i,j,'W')]
             cost[j][i-1] = cost[j][i] + 1 + rot
-        elif r[j][i-1] == '.' and cost[j][i-1] < 1e10:
-            if (j,i-1) == (j_s,i_s) :
-                return
-            _,_,d = preds[j][i-1][0]
-            if d == 'W' and cost[j][i-1] == cost[j][i] + 1 :
-                preds[j][i-1] += (i,j,'N')
-            elif d in 'NS' and cost[j][i+1] == cost[j][i] + 1001 :
-                preds[j][i-1] =+ (i,j,'N')
-
     while td != [] :
         i,j,d = td.pop()
-        seen.append((i,j))
         if d == 'E' :
             goe(i,j,'E')
             gon(i,j,'E')
@@ -170,24 +134,56 @@ def parcours(r : list, start : tuple, exit : tuple) -> int :
         # sleep(0.05)
     
     ie,je = exit
-    print(cost[je][ie])
-    seen = {(ie,je)}
-    def n_seats(i,j) :
-        c = 1
-        for ip,jp,_ in preds[j][i] :
-            if not (ip,jp) in seen :
-                c += n_seats(ip,jp)
-                seen.add((ip,jp))
-        return c
-    rp = r.copy()
-    for i,j in seen :
-        rp[j][i] = "O"
-    return n_seats(ie,je)
+    c = cost[je][ie]
+
+    print(f"nb de case : {c%1000}    nb virages : {c//1000}")
+    return c
+
+def n_seats(r,start,exit,c):
+    seen = set()
+    def bf(r,i,j,d,o) :
+        if (i,j) == exit :
+            seen.add((i,j))
+            return True
+        if o <= 0 :
+            return False
+        if r[j][i] == '#' :
+            return False
+        
+        rn,rs,re,rw = 1000,1000,1000,1000
+        if d == "N" :
+            rn = 0
+        elif d == "S" :
+            rs = 0
+        elif d == "E" :
+            re = 0
+        else :
+            rw = 0
+        if (i,j) in seen :
+            return True
+        if bf(r,i+1,j,"E", o - 1 - re) or bf(r,i-1,j,"W", o - 1 - rw) or bf(r,i,j+1,"S", o - 1 - rs) or bf(r,i,j-1,"N", o - 1 - rn) :
+            seen.add((i,j))
+            return True
+        return False
+    
+    i,j,d = start
+    bf(r,i,j,d,c)
+    return len(seen)
+        
+        
+        
+        
+        
+        
+
+
 
 
 def main():
     r,start,exit = read_file()
-    print(parcours(r,start,exit))
+    c = parcours(r,start,exit)
+    print(n_seats(r,start,exit,c))
+
 
 
 

@@ -95,8 +95,8 @@ def main():
     r,start,exit = read_file()
     print(parcours(r,start,exit))
 
-WIDTH = 150
-HEIGHT = 150
+WIDTH = 141
+HEIGHT = 141
 CASE = 5
 
 class Parcours :
@@ -119,7 +119,7 @@ class Parcours :
     def update(self) :
         
         if self.td != [] and px.frame_count % self.frame_refresh == 0 :
-            i,j,d = self.td.pop()
+            i,j,d = self.td.pop(0)
             if not d in "EWNS" :
                 print(i,j,"erreur")
             self.current = (i,j)
@@ -189,7 +189,7 @@ class Parcours :
 
 
 if __name__ == '__main__' :
-    affichage = False
+    affichage = True
     if affichage :
         r,start,end = read_file()
         Parcours(r,start,end)
