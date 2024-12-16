@@ -28,49 +28,66 @@ def parcours(r : list, start : tuple, exit : tuple) -> int :
     i,j,_ = start
     cost[j][i] = 0
     td = [start]
+    
+    def gon(i,j,d) :
+        if d == "N" :
+            rot = 0
+        elif d in "EW" :
+            rot = 1000
+        else :
+            return
+        if r[j-1][i] == '.' and cost[j-1][i] > cost[j][i] + 1 + rot:
+                td.append((i,j-1,'N'))
+                cost[j-1][i] = cost[j][i] + 1 + rot
+    def gos(i,j,d) :
+        if d == "S" :
+            rot = 0
+        elif d in "EW" :
+            rot = 1000
+        else :
+            return
+        if r[j+1][i] == '.' and cost[j+1][i] > cost[j][i] + 1 + rot:
+                td.append((i,j+1,'S'))
+                cost[j+1][i] = cost[j][i] + 1 + rot
+    def goe(i,j,d) :
+        if d == "E" :
+            rot = 0
+        elif d in "NS" :
+            rot = 1000
+        else :
+            return
+        if r[j][i+1] == '.' and cost[j][i+1] > cost[j][i] + 1 + rot :
+            td.append((i+1,j,"E"))
+            cost[j][i+1] = cost[j][i] + 1 + rot
+    def gow(i,j,d) :
+        if d == "W" :
+            rot = 0
+        elif d in "NS" :
+            rot = 1000
+        else :
+            return
+        if r[j][i-1] == '.' and cost[j][i-1] > cost[j][i] + 1 + rot :
+            td.append((i-1,j,"W"))
+            cost[j][i-1] = cost[j][i] + 1 + rot
+
     while td != [] :
         i,j,d = td.pop()
-        
         if d == 'E' :
-            if r[j][i+1] == '.' and cost[j][i+1] > cost[j][i] + 1 :
-                td.append((i+1,j,'E'))
-                cost[j][i+1] = cost[j][i] + 1
-            if r[j+1][i] == '.' and cost[j+1][i] > cost[j][i] + 1001 :
-                td.append((i,j+1,'S'))
-                cost[j+1][i] = cost[j][i] + 1001
-            if r[j-1][i] == '.' and cost[j-1][i] > cost[j][i] + 1001 :
-                td.append((i,j-1,'N'))
-                cost[j-1][i] = cost[j][i] + 1001
+            goe(i,j,'E')
+            gon(i,j,'E')
+            gos(i,j,'E')
         elif d == 'W' :
-            if r[j][i-1] == '.' and cost[j][i-1] > cost[j][i] + 1 :
-                td.append((i-1,j,'W'))
-                cost[j][i-1] = cost[j][i] + 1
-            if r[j+1][i] == '.' and cost[j+1][i] > cost[j][i] + 1001 :
-                td.append((i,j+1,'S'))
-                cost[j+1][i] = cost[j][i] + 1001
-            if r[j-1][i] == '.' and cost[j-1][i] > cost[j][i] + 1001 :
-                td.append((i,j-1,'N'))
-                cost[j-1][i] = cost[j][i] + 1001
+            gow(i,j,'W')
+            gon(i,j,'W')
+            gos(i,j,'W')
         elif d == 'N' :
-            if r[j-1][i] == '.' and cost[j-1][i] > cost[j][i] + 1 :
-                td.append((i,j-1,'N'))
-                cost[j-1][i] = cost[j][i] + 1
-            if r[j][i+1] == '.' and cost[j][i+1] > cost[j][i] + 1001 :
-                td.append((i+1,j,'E'))
-                cost[j][i+1] = cost[j][i] + 1001
-            if r[j][i-1] == '.' and cost[j][i-1] > cost[j][i] + 1001 :
-                td.append((i-1,j,'W'))
-                cost[j][i-1] = cost[j][i] + 1001
+            gon(i,j,'N')            
+            goe(i,j,'N')            
+            gow(i,j,'N')            
         elif d == 'S' :
-            if r[j+1][i] == '.' and cost[j+1][i] > cost[j][i] + 1 :
-                td.append((i,j+1,'S'))
-                cost[j+1][i] = cost[j][i] + 1
-            if r[j][i+1] == '.' and cost[j][i+1] > cost[j][i] + 1001 :
-                td.append((i+1,j,'E'))
-                cost[j][i+1] = cost[j][i] + 1001
-            if r[j][i-1] == '.' and cost[j][i-1] > cost[j][i] + 1001 :
-                td.append((i-1,j,'W'))
-                cost[j][i-1] = cost[j][i] + 1001
+            gos(i,j,'S')
+            goe(i,j,'S')
+            gow(i,j,'S')
     ie,je = exit
     return cost[je][ie]
 
